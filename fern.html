@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://d3js.org/d3.v4.js"></script>
         <style>
             html {
                 font-size: 12px;
@@ -12,7 +12,7 @@
 
             body {
                 width: 700px;
-                height:700px;
+                height: 700px;
                 margin: 0 auto;
                 background-color: blueviolet;
             }
@@ -25,12 +25,12 @@
         <title>Fern</title>
     </head>
     <body>
-			<script>
-			var ww=700;
-			var hh=700;
-            function fern(datap, ww, hh,maxn) {
+        <script>
+            var ww = 700;
+            var hh = 700;
+            function fern(datap, ww, hh, maxn) {
                 //Data from page 87 of "Fractals Everywhere"
-                var fillStyle='black';
+                var fillStyle = 'black';
                 var a = [0, .85, .2, -.15];
                 var b = [0, .04, -.26, .28];
                 var c = [0, -.04, .23, .26];
@@ -85,61 +85,43 @@
                             x = xn;
                             y = yn;
                             if (j > 100) {
-                               datap.push({x:x * ww + ww / 2,y:hh - y * hh,fill:fillStyle});
+                                datap.push({
+                                    x: x * ww + ww / 2,
+                                    y: hh - y * hh,
+                                    fill: fillStyle
+                                });
                             }
                         }
                     }
                 }
             }
-			var svg = d3.select("body").append('svg')
-					.attr('width',ww)
-					.attr('height',hh)
-					.attr('x',0)
-					.attr('y',0),
-			margin = {top: 10, right: 10, bottom: 10, left: 10},
-			width = ww - margin.left - margin.right,
-			height = hh - margin.top - margin.bottom,
-			x = d3.scaleLinear()
-			  .domain([-width / 2, width / 2])
-			  .range([0, width]),
-			y = d3.scaleLinear()
-			  .domain([-height / 2, height / 2])
-			  .range([height, 0]),
-			npoints=200000
-			;
+            var svg = d3.select("body").append('svg').attr('width', ww).attr('height', hh).attr('x', 0).attr('y', 0)
+              , margin = {
+                top: 10,
+                right: 10,
+                bottom: 10,
+                left: 10
+            }
+              , width = ww - margin.left - margin.right
+              , height = hh - margin.top - margin.bottom
+              , x = d3.scaleLinear().domain([-width / 2, width / 2]).range([0, width])
+              , y = d3.scaleLinear().domain([-height / 2, height / 2]).range([height, 0])
+              , npoints = 200000;
+            var toplot = [];
+            fern(toplot, width, height, npoints);
 
-			var toplot=[];
-			fern(toplot,width,height,npoints);
-			
-			  
-			svg = svg.attr("width", width + margin.left + margin.right)
-				.attr("height", height + margin.top + margin.bottom)
-				.append("g")
-				.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-				;
-				
+            svg = svg.attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-			var rect = svg.append("rect")
-			  .attr("width", width)
-			  .attr("height", height)
-			  .style('fill', 'grey')
-			  ;
-			  svg.selectAll('circle')
-				.data(toplot)
-				.enter()
-				.append('circle')
-				.attr('cx', function(d,i){
-					return d.x;
-					})
-				.attr('cy', function(d){
-					return d.y;
-					})
-				.attr('r', function(d){return 0.5;})
-				.style('fill',function(d){
-					return d.fill;
-					})
-				;
-	
+            var rect = svg.append("rect").attr("width", width).attr("height", height).style('fill', 'grey');
+            svg.selectAll('circle').data(toplot).enter().append('circle').attr('cx', function(d, i) {
+                return d.x;
+            }).attr('cy', function(d) {
+                return d.y;
+            }).attr('r', function(d) {
+                return 0.5;
+            }).style('fill', function(d) {
+                return d.fill;
+            });
         </script>
     </body>
 </html>
