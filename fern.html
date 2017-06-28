@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script src="https://d3js.org/d3.v4.js"></script>
         <style>
             html {
                 font-size: 12px;
@@ -11,6 +12,7 @@
 
             body {
                 width: 700px;
+                height:700px;
                 margin: 0 auto;
                 background-color: blueviolet;
             }
@@ -23,10 +25,12 @@
         <title>Fern</title>
     </head>
     <body>
-        <canvas id="fernCanvas" width="700" height="700"></canvas>
-        <script>
-            function fern(canv, ww, hh) {
+			<script>
+			var ww=700;
+			var hh=700;
+            function fern(datap, ww, hh,maxn) {
                 //Data from page 87 of "Fractals Everywhere"
+                var fillStyle='black';
                 var a = [0, .85, .2, -.15];
                 var b = [0, .04, -.26, .28];
                 var c = [0, -.04, .23, .26];
@@ -35,7 +39,7 @@
                 var f = [0, .16, .16, .044];
                 var p = [];
                 var cp = [];
-                var maxn = 200000, i;
+                var i = 0;
                 var psum = 0;
                 //Here we calulate the probabilities from matrix determinants
                 for (i = 0; i < 4; ++i) {
@@ -67,32 +71,87 @@
                 while (j++ < maxn) {
                     prob = Math.random();
                     for (i = 0; i < 4; ++i) {
-                        canv.beginPath()
                         if (i == 0)
-                            canv.fillStyle = "blue";
+                            fillStyle = "blue";
                         else if (i % 4 == 1)
-                            canv.fillStyle = "red";
+                            fillStyle = "red";
                         else if (i % 4 == 2)
-                            canv.fillStyle = "green";
+                            fillStyle = "green";
                         else if (i % 4 == 3)
-                            canv.fillStyle = "yellow";
+                            fillStyle = "yellow";
                         if (prob > cp[i] && prob <= cp[i + 1]) {
                             xn = a[i] * x + b[i] * y + e[i];
                             yn = c[i] * x + d[i] * y + f[i];
                             x = xn;
                             y = yn;
                             if (j > 100) {
-                                canv.fillRect(x * ww + ww / 2, hh - y * hh, 1, 1);
+                               datap.push({x:x * ww + ww / 2,y:hh - y * hh,fill:fillStyle});
                             }
-                            canv.stroke();
                         }
                     }
                 }
             }
-            var c = document.getElementById("fernCanvas");
-            var ctx = c.getContext("2d");
-            ctx.clearRect(0, 0, c.width, c.height);
-            fern(ctx, c.width, c.height);
+			var svg = d3.select("body").append('svg')
+					.attr('width',ww)
+					.attr('height',hh)
+					.attr('x',0)
+					.attr('y',0),
+			margin = {top: 10, right: 10, bottom: 10, left: 10},
+			width = ww - margin.left - margin.right,
+			height = hh - margin.top - margin.bottom,
+			x = d3.scaleLinear()
+			  .domain([-width / 2, width / 2])
+			  .range([0, width]),
+			y = d3.scaleLinear()
+			  .domain([-height / 2, height / 2])
+			  .range([height, 0]),
+			npoints=200000
+			;
+
+			var toplot=[];
+			fern(toplot,width,height,npoints);
+			
+			var xAxis = d3.axisBottom(x)
+				.ticks(5)
+			  .tickSize(-height);
+
+			var yAxis = d3.axisLeft(y)
+			  .ticks(5)
+			  .tickSize(-width);
+			  
+			svg = svg.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+				;
+				
+			var line = d3.line().x(function(d) {
+			  return xAxis.scale()(d.x);
+			}).y(function(d) {
+			  return yAxis.scale()(d.y);
+			});
+
+			var rect = svg.append("rect")
+			  .attr("width", width)
+			  .attr("height", height)
+			  .style('fill', 'grey')
+			  ;
+			  svg.selectAll('circle')
+				.data(toplot)
+				.enter()
+				.append('circle')
+				.attr('cx', function(d,i){
+					return d.x;
+					})
+				.attr('cy', function(d){
+					return d.y;
+					})
+				.attr('r', function(d){return 0.5;})
+				.style('fill',function(d){
+					return d.fill;
+					})
+				;
+	
         </script>
     </body>
 </html>
