@@ -104,8 +104,6 @@
             }
               , width = ww - margin.left - margin.right
               , height = hh - margin.top - margin.bottom
-              , x = d3.scaleLinear().domain([-width / 2, width / 2]).range([0, width])
-              , y = d3.scaleLinear().domain([-height / 2, height / 2]).range([height, 0])
               , npoints = 200000;
             var toplot = [];
             fern(toplot, width, height, npoints);
